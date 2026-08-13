@@ -1,11 +1,11 @@
-# Real-Time Voice-to-Voice Conversational Agent
+# Voice Call Agent - ABC Automobile Showroom
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
-[![Pipeline](https://img.shields.io/badge/Streaming-End--to--End-brightgreen.svg)]()
+[![Pipeline](https://img.shields.io/badge/Streaming-Voice--to--Voice-brightgreen.svg)]()
 
-A ultra-low latency, real-time voice-to-voice AI agent featuring full end-to-end audio streaming and instant barge-in cancellation.
+An ultra-low latency, real-time voice-to-voice AI telecaller agent tuned for **ABC Automobile Showroom**. Features full end-to-end audio streaming, customizable system prompts, and instant barge-in cancellation.
 
 ```
 [ Browser Mic ] ---> MediaRecorder (150ms chunks)
@@ -18,8 +18,8 @@ A ultra-low latency, real-time voice-to-voice AI agent featuring full end-to-end
              (Interim & Final Transcripts + VAD)
                            │
                            ▼
-            [ LLM Engine (OpenAI / Groq / DeepSeek) ]
-                     (Streaming Tokens)
+            [ LLM Engine (Groq / OpenAI / DeepSeek) ]
+           (System Prompt: system_prompt.txt)
                            │
                            ▼
                   [ Sentence Chunker ]
@@ -36,29 +36,32 @@ A ultra-low latency, real-time voice-to-voice AI agent featuring full end-to-end
 
 ---
 
-## Key Features
+## 🚗 Key Features
 
-- **End-to-End Audio Streaming**: Streams audio from browser mic to Deepgram ASR, streams LLM completion tokens to ElevenLabs TTS, and streams audio back to the browser for zero-perceived-latency conversation.
-- **Instant Barge-in (Interruption Support)**: If the user starts speaking while the assistant is replying, in-flight LLM/TTS generation tasks cancel immediately and browser audio playback flushes instantly.
-- **Multi-Provider LLM Support**: Fully compatible with **OpenAI** (`gpt-4o-mini`), **Groq** (`llama-3.3-70b-versatile`), and **DeepSeek** (`deepseek-chat`).
-- **Tuned Studio TTS**: Configured with ElevenLabs `eleven_multilingual_v2` model, studio voice parameters, and 30% reduced speaking speed for crystal-clear, natural human cadence.
-- **Resilient Connection & Retry**: Exponential backoff retry logic for API calls, auto-reconnecting WebSocket streams, and KeepAlive ping loops.
+- **Automobile Showroom Telecaller Persona**: Pre-configured via `system_prompt.txt` to act as Alex, a professional sales representative helping customers with car inquiries, test drives, and showroom visits.
+- **Standalone System Prompt File**: Easily customize AI behavior and sales scripts in `system_prompt.txt` without editing python code.
+- **End-to-End Audio Streaming**: Streams audio from browser mic to Deepgram ASR, streams LLM completion tokens to ElevenLabs TTS, and streams speech back to browser for ultra-low latency interaction.
+- **Instant Barge-in (Interruption Support)**: If the user speaks while the assistant is talking, in-flight LLM/TTS generation tasks cancel immediately and browser audio playback flushes instantly.
+- **Multi-Provider LLM Support**: Compatible with **Groq** (`llama-3.3-70b-versatile`), **OpenAI** (`gpt-4o-mini`), and **DeepSeek** (`deepseek-chat`).
+- **Tuned Studio Voice**: Configured with ElevenLabs `eleven_multilingual_v2` model, studio voice parameters, and 30% reduced speaking speed for natural human speech cadence.
 - **Monochrome Glassmorphic UI**: Minimalist black-and-white theme featuring responsive wave animations, hotkey support (<kbd>Spacebar</kbd>), and live transcript status tracking.
 
 ---
 
-## Directory Structure
+## 📂 Project Structure
 
 ```
-voice_to_voice_agent/
+voice-call-agent/
+├── system_prompt.txt       # Standalone AI Telecaller system prompt configuration
 ├── .env                    # Environment settings (created from .env.example)
 ├── .env.example            # Environment template file
+├── .gitignore              # Git ignore rules (excludes .env and venv/)
 ├── requirements.txt        # Python package dependencies
-├── config.py               # Application settings loader
+├── config.py               # Settings loader with dynamic system_prompt.txt reading
 ├── services/
 │   ├── __init__.py
 │   ├── asr_service.py      # Deepgram WebSocket Live ASR client & KeepAlive loop
-│   ├── llm_service.py      # Multi-provider streaming LLM client with conversation memory
+│   ├── llm_service.py      # Multi-provider streaming LLM client with memory
 │   └── tts_service.py      # ElevenLabs streaming TTS client with voice tuning
 ├── orchestrator.py         # Pipeline manager, silence timer, turn lock, barge-in controller
 ├── main.py                 # FastAPI application, WebSocket /ws endpoint, static server
@@ -71,7 +74,7 @@ voice_to_voice_agent/
 
 ---
 
-## Installation & Setup
+## 🛠️ Installation & Setup
 
 ### 1. Prerequisites
 - Python 3.11 or higher
@@ -79,8 +82,8 @@ voice_to_voice_agent/
 
 ### 2. Clone Repository & Setup Environment
 ```bash
-git clone https://github.com/your-username/voice-to-voice-agent.git
-cd voice-to-voice-agent
+git clone https://github.com/anandans5/voice-call-agent.git
+cd voice-call-agent
 
 # Create virtual environment
 python3 -m venv venv
@@ -112,12 +115,9 @@ ELEVENLABS_API_KEY=your_elevenlabs_api_key
 ELEVENLABS_VOICE_ID=EXAVITQu4vr4xnSDxMaL
 ELEVENLABS_MODEL_ID=eleven_multilingual_v2
 
-# LLM Provider Configuration (Choose OpenAI, Groq, or DeepSeek)
-OPENAI_MODEL=gpt-4o-mini
-OPENAI_BASE_URL=
-
-# System Persona
-SYSTEM_PROMPT="You are a helpful, concise, and conversational AI voice assistant. Keep your answers brief (1-3 sentences), warm, and engaging, optimized for natural spoken interaction."
+# LLM Provider Configuration (OpenAI / Groq / DeepSeek)
+OPENAI_MODEL=llama-3.3-70b-versatile
+OPENAI_BASE_URL=https://api.groq.com/openai/v1
 
 # Deepgram ASR Settings
 DEEPGRAM_MODEL=nova-2
@@ -129,32 +129,19 @@ PORT=8050
 
 ---
 
-## Supported LLM Providers
+## 📝 Customizing the Telecaller Prompt
 
-### 1. OpenAI (Default)
-```env
-OPENAI_API_KEY=sk-proj-...
-OPENAI_MODEL=gpt-4o-mini
-OPENAI_BASE_URL=
-```
+Edit `system_prompt.txt` directly to update the AI's script, tone, or showroom details:
 
-### 2. Groq (Free & Fast Llama 3.3)
-```env
-OPENAI_API_KEY=gsk_...
-OPENAI_MODEL=llama-3.3-70b-versatile
-OPENAI_BASE_URL=https://api.groq.com/openai/v1
-```
+```txt
+You are Alex, a warm, energetic, and professional customer sales representative from ABC Automobile Showroom.
 
-### 3. DeepSeek
-```env
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=deepseek-chat
-OPENAI_BASE_URL=https://api.deepseek.com
+Your main goal on this phone call is to assist customers with new car inquiries, help them choose the right vehicle (SUV, Sedan, Hatchback, or EV), inform them about ongoing showroom offers, and schedule a test drive or showroom visit.
 ```
 
 ---
 
-## Running the Application
+## ⚡ Running the Application
 
 Start the FastAPI application server:
 
@@ -163,27 +150,21 @@ source venv/bin/activate
 python3 main.py
 ```
 
-Or using Uvicorn directly:
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8050 --reload
-```
-
 Open your browser and navigate to:
 **`http://localhost:8050`**
 
 ---
 
-## Usage
+## 🎙️ Usage
 
-1. Click the **Microphone Button** (or press <kbd>Spacebar</kbd>) to activate audio input.
-2. Grant microphone permissions when prompted by your browser.
-3. Speak your prompt into the mic.
-4. The system will transcribe your speech, generate an LLM response, and stream studio-quality speech audio back in real-time.
-5. **Barge-in**: Speak at any point while the assistant is talking to immediately cancel playback and start a new turn.
+1. Click the **Microphone Button** (or press <kbd>Spacebar</kbd>) to start the call.
+2. Allow microphone access when prompted by your browser.
+3. Speak your prompt (e.g., *"Hi, I am looking to buy an SUV under 25 lakhs"*).
+4. The AI telecaller will respond in real-time with spoken voice audio.
+5. **Barge-in**: Speak at any time while the telecaller is speaking to interrupt and ask a new question.
 
 ---
 
-## License
+## 📄 License
 
 MIT License. See [LICENSE](LICENSE) for details.
