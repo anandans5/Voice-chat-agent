@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Voice-to-Voice AI Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=2.0">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Voice-to-Voice AI</h1>
+          <p class="subtitle">Deepgram ASR • LLM Engine • ElevenLabs TTS</p>
+        </div>
+      </div>
+      <div class="status-pill" id="statusPill">
+        <span class="status-dotDisconnected" id="statusDot"></span>
+        <span id="statusText">Connecting...</span>
+      </div>
+    </header>
+
+    <div class="error-banner hidden" id="errorBanner">
+      <span class="error-icon">⚠️</span>
+      <span id="errorMessage">API Key missing or connection failed</span>
+      <button class="close-error" onclick="hideError()">✕</button>
+    </div>
+
+    <main class="main-stage">
+      <div class="visualizer-container">
+        <div class="wave-rings" id="waveRings">
+          <div class="ring ring-1"></div>
+          <div class="ring ring-2"></div>
+          <div class="ring ring-3"></div>
+        </div>
+
+        <button class="mic-button" id="micBtn" onclick="toggleMic()" aria-label="Toggle Microphone">
+          <div class="mic-icon-wrapper">
+            <svg class="mic-on-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            <svg class="mic-off-icon hidden" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="1" y1="1" x2="23" y2="23"/>
+              <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/>
+              <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+        </button>
+        <div class="mic-hint" id="micHint">Click or press <kbd>Space</kbd> to Start</div>
+      </div>
+
+      <div class="state-indicator" id="stateIndicator">
+        <span class="indicator-badge idle" id="indicatorBadge">Idle</span>
+      </div>
+
+      <section class="conversation-section">
+        <div class="section-header">
+          <h2>Live Stream Transcript</h2>
+          <button class="clear-btn" onclick="clearConversation()">Clear History</button>
+        </div>
+        <div class="transcript-box" id="transcriptBox">
+          <div class="welcome-message" id="welcomeMsg">
+            <p>Start the microphone to begin talking.</p>
+            <p class="sub">Your speech streams to Deepgram ASR, generates responses via LLM, and streams back voice audio via ElevenLabs TTS in real-time.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="latency-info">
+        <span class="badge">Streaming Pipeline Active</span>
+        <span class="badge">Barge-in Supported</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/app.js?v=2.0"></script>
+</body>
+</html>
