@@ -1,17 +1,13 @@
 import asyncio
 import logging
-from typing import AsyncGenerator, List, Dict
-from openai import AsyncOpenAI, APIError, APIConnectionError, RateLimitError
+from typing import AsyncGenerator, List, Dict, Optional
+from openai import AsyncOpenAI, APIConnectionError, RateLimitError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from config import settings, get_settings
 
 logger = logging.getLogger("llm_service")
 
 class OpenAILLMService:
-    """
-    Manages OpenAI Chat Completions streaming with conversation memory
-    and transient failure retry logic.
-    """
     def __init__(self):
         self.client: Optional[AsyncOpenAI] = None
         self.history: List[Dict[str, str]] = []
@@ -28,38 +24,29 @@ class OpenAILLMService:
             self.client = None
             logger.warning("OPENAI_API_KEY is not set or using placeholder.")
 
-        # Initialize conversation with system prompt
         self.history = [{"role": "system", "content": current_settings.system_prompt}]
 
     def reset_history(self):
-        """Resets conversation memory to system prompt."""
-        self.history = [{"role": "system", "content": settings.system_prompt}]
+        current_settings = get_settings()
+        self.history = [{"role": "system", "content": current_settings.system_prompt}]
 
     def update_system_prompt(self, new_prompt: str):
-        """Updates system prompt and updates history head."""
-        settings.system_prompt = new_prompt
         if self.history and self.history[0]["role"] == "system":
             self.history[0]["content"] = new_prompt
         else:
             self.history.insert(0, {"role": "system", "content": new_prompt})
 
     async def stream_response(self, user_text: str) -> AsyncGenerator[str, None]:
-        """
-        Appends user_text to history, calls OpenAI Chat Completions with stream=True,
-        yields text deltas as they arrive, and saves the final assistant response to history.
-        """
         if not self.client:
             self._init_client()
             if not self.client:
                 yield "[Error: OpenAI API Key is missing or invalid. Please configure .env file.]"
                 return
 
-        # Append user turn to history
         self.history.append({"role": "user", "content": user_text})
         full_assistant_reply = []
 
         try:
-            # Execute completion request with retry logic inside helper
             stream = await self._create_completion_with_retry()
 
             async for chunk in stream:
@@ -69,14 +56,12 @@ class OpenAILLMService:
                         full_assistant_reply.append(delta)
                         yield delta
 
-            # Save full assistant response to conversation history
             complete_text = "".join(full_assistant_reply).strip()
             if complete_text:
                 self.history.append({"role": "assistant", "content": complete_text})
 
         except asyncio.CancelledError:
             logger.info("OpenAI LLM streaming task was cancelled due to barge-in/interruption.")
-            # Store partial reply if cancelled mid-stream to preserve context
             partial_text = "".join(full_assistant_reply).strip()
             if partial_text:
                 self.history.append({"role": "assistant", "content": f"{partial_text} [interrupted]"})
@@ -93,7 +78,6 @@ class OpenAILLMService:
         retry=retry_if_exception_type((APIConnectionError, RateLimitError))
     )
     async def _create_completion_with_retry(self):
-        """Calls OpenAI Chat Completions API with exponential backoff on transient errors."""
         current_settings = get_settings()
         return await self.client.chat.completions.create(
             model=current_settings.openai_model,

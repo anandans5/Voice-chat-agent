@@ -2,6 +2,18 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 
+def load_system_prompt() -> str:
+    prompt_path = os.path.join(os.path.dirname(__file__), "system_prompt.txt")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if content:
+                return content
+    return (
+        "You are Alex, a warm, energetic, and professional customer sales representative from "
+        "ABC Automobile Showroom. Keep your answers brief (1-3 sentences), polite, and engaging."
+    )
+
 class Settings(BaseSettings):
     deepgram_api_key: str = Field(default="", env="DEEPGRAM_API_KEY")
     openai_api_key: str = Field(default="", env="OPENAI_API_KEY")
@@ -12,10 +24,7 @@ class Settings(BaseSettings):
 
     openai_model: str = Field(default="gpt-4o-mini", env="OPENAI_MODEL")
     openai_base_url: str = Field(default="", env="OPENAI_BASE_URL")
-    system_prompt: str = Field(
-        default="You are a helpful, concise, and conversational AI voice assistant. Keep your answers brief (1-3 sentences), warm, and engaging, optimized for natural spoken interaction.",
-        env="SYSTEM_PROMPT"
-    )
+    system_prompt: str = Field(default_factory=load_system_prompt, env="SYSTEM_PROMPT")
 
     deepgram_model: str = Field(default="nova-2", env="DEEPGRAM_MODEL")
 
