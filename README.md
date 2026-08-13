@@ -36,7 +36,7 @@ An ultra-low latency, real-time voice-to-voice AI telecaller agent tuned for **A
 
 ---
 
-## 🚗 Key Features
+## Key Features
 
 - **Automobile Showroom Telecaller Persona**: Pre-configured via `system_prompt.txt` to act as Alex, a professional sales representative helping customers with car inquiries, test drives, and showroom visits.
 - **Standalone System Prompt File**: Easily customize AI behavior and sales scripts in `system_prompt.txt` without editing python code.
@@ -48,7 +48,7 @@ An ultra-low latency, real-time voice-to-voice AI telecaller agent tuned for **A
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Voice-chat-agent/
@@ -74,7 +74,7 @@ Voice-chat-agent/
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### 1. Prerequisites
 - Python 3.11 or higher
@@ -129,7 +129,7 @@ PORT=8050
 
 ---
 
-## 📝 Customizing the Telecaller Prompt
+## Customizing the Telecaller Prompt
 
 Edit `system_prompt.txt` directly to update the AI's script, tone, or showroom details:
 
@@ -141,7 +141,7 @@ Your main goal on this phone call is to assist customers with new car inquiries,
 
 ---
 
-## ⚡ Running the Application
+## Running the Application
 
 Start the FastAPI application server:
 
@@ -155,7 +155,7 @@ Open your browser and navigate to:
 
 ---
 
-## 🎙️ Usage
+## Usage
 
 1. Click the **Microphone Button** (or press <kbd>Spacebar</kbd>) to start the call.
 2. Allow microphone access when prompted by your browser.
