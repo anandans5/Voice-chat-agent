@@ -1,4 +1,4 @@
-# Voice Call Agent - ABC Automobile Showroom
+# Voice Chat Agent - ABC Automobile Showroom
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
@@ -51,7 +51,7 @@ An ultra-low latency, real-time voice-to-voice AI telecaller agent tuned for **A
 ## 📂 Project Structure
 
 ```
-voice-call-agent/
+Voice-chat-agent/
 ├── system_prompt.txt       # Standalone AI Telecaller system prompt configuration
 ├── .env                    # Environment settings (created from .env.example)
 ├── .env.example            # Environment template file
@@ -82,8 +82,8 @@ voice-call-agent/
 
 ### 2. Clone Repository & Setup Environment
 ```bash
-git clone https://github.com/anandans5/voice-call-agent.git
-cd voice-call-agent
+git clone https://github.com/anandans5/Voice-chat-agent.git
+cd Voice-chat-agent
 
 # Create virtual environment
 python3 -m venv venv
